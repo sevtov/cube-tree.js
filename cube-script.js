@@ -1,25 +1,137 @@
-const canvas = document.querySelector('#canvas-container');
+let scene, camera, render
 
-var scene = new THREE.Scene();
+var mouseX = 0, mouseY = 0;
 
-var camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+var windowHalfX = window.innerWidth / 2;
 
-var renderer = new THREE.WebGLRenderer();
-renderer.setSize( window.innerWidth, window.innerHeight );
-document.body.appendChild( renderer.domElement );
+var windowHalfY = window.innerHeight / 2;
 
-var geometry = new THREE.BoxGeometry( 10, 10, 10);
-var material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
+function init() {
 
-var cube = new THREE.Mesh( geometry, material );
-scene.add( cube );
+const canvas = document.querySelector('#c');
 
-camera.position.z = 25;
+scene = new THREE.Scene()
 
-function render() {
-        requestAnimationFrame( render );
-  cube.rotation.x += 0.01;
-  cube.rotation.y += 0.01;      
-  renderer.render( scene, camera );
+
+camera = new THREE.PerspectiveCamera(0.01, window.innerWidth/window.innerHeight,1,5000)
+
+camera.rotation.y = 55/180*Math.PI
+
+camera.rotation.x = -10/180*Math.PI
+
+camera.position.x = 100
+
+camera.position.y = 100
+
+camera.position.z = -500
+
+
+hlight = new THREE.AmbientLight(0xFDC75A, 1)
+scene.add(hlight)
+
+
+renderer = new THREE.WebGLRenderer({
+    canvas, 
+    antialias: true, 
+    alpha: true,
+    logarithmicDepthBuffer: true
+})
+
+renderer.setSize(window.innerWidth, window.innerHeight)
+
+//controls = new THREE.OrbitControls(camera, renderer.domElement);
+
+document.addEventListener( 'mousemove', onDocumentMouseMove, false );
+
+document.addEventListener( 'touchstart', onDocumentTouchStart, false );
+
+document.addEventListener( 'touchmove', onDocumentTouchMove, false );
+
+window.addEventListener( 'resize', onWindowResize, false );
+
+
+let loader = new THREE.GLTFLoader()
+
+loader.load('https://raw.githubusercontent.com/sevtov/cube/main/cube/animated/cube-animated.gltf', function(gltf){
+
+car = gltf.scene.children[0]
+
+car.scale.set(0.022, 0.022, 0.022)
+
+scene.add(gltf.scene)
+
+animate();
+
+})
+
 }
-render();
+
+//=======================добавил===========================
+
+function onWindowResize() {
+
+windowHalfX = window.innerWidth / 2;
+
+windowHalfY = window.innerHeight / 2;
+
+camera.aspect = window.innerWidth / window.innerHeight;
+
+camera.updateProjectionMatrix();
+
+renderer.setSize( window.innerWidth, window.innerHeight );
+
+}
+
+//
+
+function onDocumentMouseMove( event ) {
+
+mouseX = event.clientX - windowHalfX;
+
+mouseY = event.clientY - windowHalfY;
+
+}
+
+function onDocumentTouchStart( event ) {
+
+if ( event.touches.length === 2 ) {
+
+event.preventDefault();
+
+mouseX = event.touches[ 0 ].pageX - windowHalfX;
+
+mouseY = event.touches[ 0 ].pageY - windowHalfY;
+
+}
+
+}
+
+function onDocumentTouchMove( event ) {
+
+if ( event.touches.length === 2 ) {
+
+event.preventDefault();
+
+mouseX = event.touches[ 0 ].pageX - windowHalfX;
+
+mouseY = event.touches[ 0 ].pageY - windowHalfY;
+
+}
+
+}
+
+function animate() {
+
+camera.position.x += ( mouseX - camera.position.x ) * .015;
+
+camera.position.y += ( - mouseY - camera.position.y ) * .015;
+
+camera.lookAt( 0, 0, 0 );
+
+renderer.render(scene,camera);
+
+requestAnimationFrame(animate);
+
+}
+
+init()
