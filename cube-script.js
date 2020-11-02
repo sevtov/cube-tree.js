@@ -52,7 +52,7 @@ window.addEventListener( 'resize', onWindowResize, false );
 
 let loader = new THREE.GLTFLoader()
 
-loader.load('https://raw.githubusercontent.com/sevtov/cube/main/cube/animated/cube-animated.gltf', function(gltf){
+loader.load('https://raw.githubusercontent.com/sevtov/cube/main/cube/cube-gltf.gltf', function(gltf){
 
 car = gltf.scene.children[0]
 
